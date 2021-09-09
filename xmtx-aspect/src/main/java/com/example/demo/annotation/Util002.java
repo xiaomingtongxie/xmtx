@@ -19,7 +19,7 @@ import java.util.*;
  * 非对称加密工具类
  */
 //@Slf4j
-public class Util001 {
+public class Util002 {
     /**
      * 字符集
      */
@@ -61,7 +61,7 @@ public class Util001 {
     public static void main(String[] args) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 //        StringBuilder url = new StringBuilder("http://e.test.bank.ecitic.com/citiccard/aps-openapi-gateway/aps-openapi/aps-openapi/user/sync/info" +
-        StringBuilder url = new StringBuilder("https://e.test.bank.ecitic.com/citiccard/aps-openapi-gateway/aps-openapi/aps-openapi/case/etp" +
+        StringBuilder url = new StringBuilder("http://e.test.bank.ecitic.com/citiccard/aps-openapi-gateway/aps-openapi/aps-openapi/case/etp" +
                 "?clientIp=127.0.0.1&userAgent=3&deviceType=3");
         String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
@@ -100,7 +100,7 @@ public class Util001 {
         postParam = jsonObject.toJSONString();
 //        postParam = jsonString;
 
-        String sign = Util001.getSign(signParam, "post", postParam);
+        String sign = Util002.getSign(signParam, "post", postParam);
         System.out.println("sign : " + sign);
         url.append(signParam).append("&sign=").append(sign);
         URI uri = new URI(url.toString());
@@ -108,7 +108,7 @@ public class Util001 {
         String result = restTemplate.postForObject(uri, jsonObject, String.class);
         System.out.println("uri : " + uri);
 
-        String decryptRes = Util001.decryptByPrivateKey(result, Util001.privateKey);
+        String decryptRes = Util002.decryptByPrivateKey(result, Util002.privateKey);
         System.out.println(decryptRes);
 //
 //        String str = "kjjfrFslB55O711hgZfTmqjQHJjmCxf5ASoc8g9fE/ZZYKM1Tkhu4YoJf2F908licEO+0TVWVlTiIXiliUelAIKDofZcd0bgYzf52UUgKqbUViJcUw0VAFXwoKUOb9ZMVswDRY8b5N2hPN4pgCAK3wq7F/AEeCGScGAungByTs88jl9rhmo2SwmRBviba6VnhaFbM2Ox8e8AVNQsQ8+03p4HgxTx75YsStXbklIbroJxpvZFxHS3Eu4l4fpxDiamFJw99286VVqyYthMmihumBCgqoZHjoHbaWrSzod7XyGBtzWeQrOw630K+EuQE1mEMus80ZrjA16gmajC5eBPOQ==";
@@ -432,7 +432,7 @@ public class Util001 {
      */
     public static void testGetKeyPair() {
         try {
-            KeyPair keyPair = Util001.getKeyPair(2048);
+            KeyPair keyPair = Util002.getKeyPair(2048);
             PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
             System.out.println(new String(Base64.getEncoder().encode(publicKey.getEncoded())));

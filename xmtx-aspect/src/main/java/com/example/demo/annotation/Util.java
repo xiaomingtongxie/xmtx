@@ -19,7 +19,7 @@ import java.util.*;
  * 非对称加密工具类
  */
 //@Slf4j
-public class Util001 {
+public class Util {
     /**
      * 字符集
      */
@@ -59,9 +59,21 @@ public class Util001 {
     private static final String DATA = "data";
 
     public static void main(String[] args) throws Exception {
+        for(int i =0;i<=10000;i++) {
+            zxyh(i*50);
+        }
+//
+//        String str = "kjjfrFslB55O711hgZfTmqjQHJjmCxf5ASoc8g9fE/ZZYKM1Tkhu4YoJf2F908licEO+0TVWVlTiIXiliUelAIKDofZcd0bgYzf52UUgKqbUViJcUw0VAFXwoKUOb9ZMVswDRY8b5N2hPN4pgCAK3wq7F/AEeCGScGAungByTs88jl9rhmo2SwmRBviba6VnhaFbM2Ox8e8AVNQsQ8+03p4HgxTx75YsStXbklIbroJxpvZFxHS3Eu4l4fpxDiamFJw99286VVqyYthMmihumBCgqoZHjoHbaWrSzod7XyGBtzWeQrOw630K+EuQE1mEMus80ZrjA16gmajC5eBPOQ==";
+//
+//
+//        String s = decryptByPrivateKey(str, privateKey);
+//        System.out.println("test:" + s);
+    }
+
+    private static void zxyh( int x) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
 //        StringBuilder url = new StringBuilder("http://e.test.bank.ecitic.com/citiccard/aps-openapi-gateway/aps-openapi/aps-openapi/user/sync/info" +
-        StringBuilder url = new StringBuilder("https://e.test.bank.ecitic.com/citiccard/aps-openapi-gateway/aps-openapi/aps-openapi/case/etp" +
+        StringBuilder url = new StringBuilder("http://e.test.bank.ecitic.com/citiccard/aps-openapi-gateway/aps-openapi/aps-openapi/casepool/list" +
                 "?clientIp=127.0.0.1&userAgent=3&deviceType=3");
         String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
@@ -71,36 +83,24 @@ public class Util001 {
 //        String appId = "01016N8";
         String appId = "0103680";
 //         &timestamp=202104131750&appId=0103680
-        String token = "KagL+KrCV0rH3IWrKLUmmWvjGEv7yu4dJ82moQhQbJf8nT/5UDFUeA==" ;
-        String cardNo = "4033920058075492" ;
-        String currency = "156";
+        String signParam = new StringBuffer("&timestamp=").append(timestamp).append("&appId=").append(appId).toString();
 
-        String signParam = new StringBuffer("&timestamp=").append(timestamp).append("&appId=").append(appId)
-//                .append("&userToken=").append(token)
-//                .append("&cardId=").append(cardNo)
-//                .append("&currency=").append(currency)
-//                .append("&startDate=").append("20200101")
-//                .append("&endDate=").append("20210722")
-//                .append("&start=").append(0)
-//                .append("&limit=").append(50)
-                .toString();
-//
 //        String postParam = "{\"users\":[{\"agentId\":\"680\",\"cid\":\"370883198512280000\",\"education\":\"4\",\"email\":\"\",\"gender\":\"1\"," +
 //                "\"officePhone\":\"\",\"officeTel\":\"55515536\",\"phone\":\"13173000000\",\"position\":\"1\",\"qq\":\"\",\"status\":\"0\"," +
 //                "\"type\":\"1\",\"userId\":\"test000\",\"userName\":\"test01\",\"weixin\":\"\",\"workArea\":\"济南\",\"workStartDate\":\"2020-08-19\"}]}";
+////
+//        Map map = new HashMap();
+//        map.put("rrn",556);
 
-        Map map = new HashMap();
-        map.put("rrn",5178);
-
-        String jsonString = JSON.toJSONString(map);
-        String postParam = "{\"userToken\":\"KagL+KrCVOrH3IWrKLUmmWvjGEv7yu4dJ82moQhQbJf8nT/5UDFUeA==\",\"cardId\":\"4033920058075492\"," +
-                "\"currency\":\"156\",\"startDate\":\"20200101\",\"endDate\":\"20210722\",\"start\":\"0\",\"limit\":\"50\"}";
+//        String jsonString = JSON.toJSONString(map);
+        String postParam = "{\"rrn\":" +x+
+                "}";
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(postParam);
         // 重新赋值，本地生成签名时用到ResponseBody值要跟传过去的相同
         postParam = jsonObject.toJSONString();
 //        postParam = jsonString;
 
-        String sign = Util001.getSign(signParam, "post", postParam);
+        String sign = Util.getSign(signParam, "post", postParam);
         System.out.println("sign : " + sign);
         url.append(signParam).append("&sign=").append(sign);
         URI uri = new URI(url.toString());
@@ -108,14 +108,10 @@ public class Util001 {
         String result = restTemplate.postForObject(uri, jsonObject, String.class);
         System.out.println("uri : " + uri);
 
-        String decryptRes = Util001.decryptByPrivateKey(result, Util001.privateKey);
+        String decryptRes = Util.decryptByPrivateKey(result, Util.privateKey);
+        int i = decryptRes.indexOf("\"channelCode\":\"6\"");
+
         System.out.println(decryptRes);
-//
-//        String str = "kjjfrFslB55O711hgZfTmqjQHJjmCxf5ASoc8g9fE/ZZYKM1Tkhu4YoJf2F908licEO+0TVWVlTiIXiliUelAIKDofZcd0bgYzf52UUgKqbUViJcUw0VAFXwoKUOb9ZMVswDRY8b5N2hPN4pgCAK3wq7F/AEeCGScGAungByTs88jl9rhmo2SwmRBviba6VnhaFbM2Ox8e8AVNQsQ8+03p4HgxTx75YsStXbklIbroJxpvZFxHS3Eu4l4fpxDiamFJw99286VVqyYthMmihumBCgqoZHjoHbaWrSzod7XyGBtzWeQrOw630K+EuQE1mEMus80ZrjA16gmajC5eBPOQ==";
-//
-//
-//        String s = decryptByPrivateKey(str, privateKey);
-//        System.out.println("test:" + s);
     }
 
     /**
@@ -432,7 +428,7 @@ public class Util001 {
      */
     public static void testGetKeyPair() {
         try {
-            KeyPair keyPair = Util001.getKeyPair(2048);
+            KeyPair keyPair = Util.getKeyPair(2048);
             PublicKey publicKey = keyPair.getPublic();
             PrivateKey privateKey = keyPair.getPrivate();
             System.out.println(new String(Base64.getEncoder().encode(publicKey.getEncoded())));

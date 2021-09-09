@@ -142,6 +142,7 @@ public class Util001 {
         byte[] publicKeyBytes = Base64.getDecoder().decode(publicKey.getBytes());
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
         return keyFactory.generatePublic(keySpec);
     }
 
